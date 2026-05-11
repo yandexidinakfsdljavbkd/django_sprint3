@@ -23,12 +23,7 @@ posts = [
                 с мели приливом и пригнало гораздо ближе к берегу.
                 Это подало мне надежду, что, когда ветер стихнет,
                 мне удастся добраться до корабля и запастись едой и
-                другими необходимыми вещами. Я немного приободрился,
-                хотя печаль о погибших товарищах не покидала меня.
-                Мне всё думалось, что, останься мы на корабле, мы
-                непременно спаслись бы. Теперь из его обломков мы могли бы
-                построить баркас, на котором и выбрались бы из этого
-                гиблого места.''',
+                другими необходимыми вещами.''',
     },
     {
         'id': 2,
@@ -36,34 +31,49 @@ posts = [
         'date': '25 октября 1659 года',
         'category': 'not-my-day',
         'text': '''Всю ночь и весь день шёл дождь и дул сильный
-                порывистый ветер. 25 октября.  Корабль за ночь разбило
-                в щепки; на том месте, где он стоял, торчат какие-то
-                жалкие обломки,  да и те видны только во время отлива.
-                Весь этот день я хлопотал  около вещей: укрывал и
-                укутывал их, чтобы не испортились от дождя.''',
+                порывистый ветер.''',
     },
 ]
 
-# Индекс «id поста -> сам пост» для быстрого поиска без перебора списка.
 posts_by_id = {post['id']: post for post in posts}
 
 
 def index(request):
     template = 'blog/index.html'
-    context = {'posts': posts[::-1]}
+
+    context = {
+        'post_list': posts[::-1]
+    }
+
     return render(request, template, context)
 
 
 def post_detail(request, post_id):
     template = 'blog/detail.html'
+
     post = posts_by_id.get(post_id)
+
     if post is None:
         raise Http404(f'Пост с id={post_id} не найден')
-    context = {'post': post}
+
+    context = {
+        'post': post
+    }
+
     return render(request, template, context)
 
 
 def category_posts(request, category_slug):
     template = 'blog/category.html'
-    context = {'category_slug': category_slug}
+
+    post_list = [
+        post for post in posts
+        if post['category'] == category_slug
+    ]
+
+    context = {
+        'category_slug': category_slug,
+        'post_list': post_list,
+    }
+
     return render(request, template, context)
